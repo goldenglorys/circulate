@@ -62,5 +62,15 @@ def set_algorithm(algorithm):
     return jsonify({"success": True})
 
 
+@app.route("/api/add_ip", methods=["POST"])
+def add_ip():
+    data = request.json
+    new_ip = data.get("ip")
+    if new_ip:
+        lb.add_ip(new_ip)
+        return jsonify({"success": True, "message": f"Added {new_ip}"})
+    return jsonify({"success": False, "message": "Invalid IP"})
+
+
 if __name__ == "__main__":
     app.run(debug=True)
