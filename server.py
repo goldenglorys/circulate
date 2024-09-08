@@ -56,5 +56,11 @@ def get_ip():
     return jsonify({"ip": ip, "message": "circulate", "stats": lb.get_stats()})
 
 
+@app.route("/api/set_algorithm/<algorithm>")
+def set_algorithm(algorithm):
+    lb.set_algorithm(algorithm)
+    return jsonify({"success": True})
+
+
 if __name__ == "__main__":
     app.run(debug=True)
