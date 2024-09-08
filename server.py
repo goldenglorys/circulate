@@ -29,6 +29,9 @@ class LoadBalancer:
     def get_stats(self):
         return self.connections
 
+    def get_current_algorithm(self):
+        return self.algorithm
+
     def set_algorithm(self, algorithm):
         self.algorithm = algorithm
 
@@ -53,7 +56,14 @@ lb = LoadBalancer(
 @app.route("/api/get_ip")
 def get_ip():
     ip = lb.get_ip()
-    return jsonify({"ip": ip, "message": "circulate", "stats": lb.get_stats()})
+    return jsonify(
+        {
+            "ip": ip,
+            "message": "circulate",
+            "current_algorithm": lb.get_current_algorithm(),
+            "stats": lb.get_stats(),
+        }
+    )
 
 
 @app.route("/api/set_algorithm/<algorithm>")
