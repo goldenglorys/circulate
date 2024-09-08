@@ -53,7 +53,7 @@ lb = LoadBalancer(
 @app.route("/api/get_ip")
 def get_ip():
     ip = lb.get_ip()
-    return jsonify({"ip": ip, "message": "hello", "stats": lb.get_stats()})
+    return jsonify({"ip": ip, "message": "circulate", "stats": lb.get_stats()})
 
 
 if __name__ == "__main__":
