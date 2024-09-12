@@ -1,7 +1,3 @@
-export FLASK_APP=server
-export FLASK_ENV=development
-flask run
-
 ## Circulate - load balancer viz.
 This project presents a graphical depiction of a load balancer allocating requests among multiple IP addresses. It illustrates various load balancing techniques and permits real-time engagement and monitoring of the load distribution.
 
