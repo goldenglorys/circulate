@@ -8,6 +8,7 @@ from collections import deque
 app = Flask(__name__, static_folder="./client/build")
 CORS(app)
 
+
 class LoadBalancer:
     def __init__(self, ips):
         self.ips = ips
@@ -45,15 +46,9 @@ class LoadBalancer:
 
 lb = LoadBalancer(
     [
-        # "95.77.48.211",
-        # "109.170.148.204",
-        # "76.223.137.165",
-        # "122.117.19.28",
-        # "45.223.197.37",
-        "ip1",
-        "ip2",
-        "ip3",
-        "ip4"
+        "192.168.1.1",
+        "192.168.1.2",
+        "192.168.1.3",
     ]
 )
 

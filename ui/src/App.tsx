@@ -23,22 +23,22 @@ const initialNodes: Node[] = [
     targetPosition: Position.Left,
   },
   {
-    id: "ip1",
-    data: { label: "IP1: 0" },
+    id: "192.168.1.1",
+    data: { label: "192.168.1.1: 0" },
     position: { x: 200, y: 0 },
     sourcePosition: Position.Right,
     targetPosition: Position.Left,
   },
   {
-    id: "ip2",
-    data: { label: "IP2: 0" },
+    id: "192.168.1.2",
+    data: { label: "192.168.1.2: 0" },
     position: { x: 200, y: 100 },
     sourcePosition: Position.Right,
     targetPosition: Position.Left,
   },
   {
-    id: "ip3",
-    data: { label: "IP3: 0" },
+    id: "192.168.1.3",
+    data: { label: "192.168.1.3: 0" },
     position: { x: 200, y: 200 },
     sourcePosition: Position.Right,
     targetPosition: Position.Left,
@@ -54,48 +54,48 @@ const initialNodes: Node[] = [
 
 const initialEdges: Edge[] = [
   {
-    id: "e-lb-ip1",
+    id: "e-lb-192.168.1.1",
     source: "lb",
-    target: "ip1",
+    target: "192.168.1.1",
     type: "smoothstep",
     animated: true,
     markerEnd: { type: MarkerType.ArrowClosed },
   },
   {
-    id: "e-lb-ip2",
+    id: "e-lb-192.168.1.2",
     source: "lb",
-    target: "ip2",
+    target: "192.168.1.2",
     type: "smoothstep",
     animated: true,
     markerEnd: { type: MarkerType.ArrowClosed },
   },
   {
-    id: "e-lb-ip3",
+    id: "e-lb-192.168.1.3",
     source: "lb",
-    target: "ip3",
+    target: "192.168.1.3",
     type: "smoothstep",
     animated: true,
     markerEnd: { type: MarkerType.ArrowClosed },
   },
   {
-    id: "e-ip1-service",
-    source: "ip1",
+    id: "e-192.168.1.1-service",
+    source: "192.168.1.1",
     target: "service",
     type: "smoothstep",
     animated: true,
     markerEnd: { type: MarkerType.ArrowClosed },
   },
   {
-    id: "e-ip2-service",
-    source: "ip2",
+    id: "e-192.168.1.2-service",
+    source: "192.168.1.2",
     target: "service",
     type: "smoothstep",
     animated: true,
     markerEnd: { type: MarkerType.ArrowClosed },
   },
   {
-    id: "e-ip3-service",
-    source: "ip3",
+    id: "e-192.168.1.3-service",
+    source: "192.168.1.3",
     target: "service",
     type: "smoothstep",
     animated: true,
@@ -146,13 +146,12 @@ function App() {
 
       setNodes((nds) =>
         nds.map((node) => {
-          if (node.id.startsWith("ip")) {
-            const ipNum = node.id.slice(2);
+          if (node.id.startsWith("192.168.")) {
             return {
               ...node,
               data: {
                 ...node.data,
-                label: `IP${ipNum}: ${stats[`ip${ipNum}`]}`,
+                label: `${node.id}: ${stats[node.id]}`,
               },
               style:
                 node.id === ip.toLowerCase() ? { background: "#4CAF50" } : {},
@@ -166,8 +165,6 @@ function App() {
         ...prevResults,
         `Request handled by ${ip}. Response: "${message}"`,
       ]);
-
-      // Remove the setTimeout here as it might interfere with high-frequency requests
     } catch (error) {
       console.error("Error sending request:", error);
       setResults((prevResults) => [...prevResults, `Error: ${error}`]);
@@ -193,30 +190,44 @@ function App() {
     sendRequests();
   };
 
+  const generateIPAddress = (existingIPs: string[]): string => {
+    const baseIP = "192.168.1";
+    let newIP = `${baseIP}.${Math.floor(Math.random() * 256)}`;
+
+    // Ensure the new IP is unique
+    while (existingIPs.includes(newIP)) {
+      newIP = `${baseIP}.${Math.floor(Math.random() * 256)}`;
+    }
+
+    return newIP;
+  };
+
   const addNewIP = async () => {
-    const newIPNumber =
-      nodes.filter((node) => node.id.startsWith("ip")).length + 1;
-    const newIPId = `ip${newIPNumber}`;
+    const existingIPs = nodes
+      .filter((node) => node.id.startsWith("192.168."))
+      .map((node) => node.id); // Adjust this condition based on your IP range
+    const newIP = generateIPAddress(existingIPs);
+
     const newNode: Node = {
-      id: newIPId,
-      data: { label: `IP${newIPNumber}: 0` },
-      position: { x: 200, y: (newIPNumber - 1) * 100 },
+      id: newIP,
+      data: { label: `${newIP}: 0` },
+      position: { x: 200, y: existingIPs.length * 100 },
       sourcePosition: Position.Right,
       targetPosition: Position.Left,
     };
 
     const newEdgeFromLB: Edge = {
-      id: `e-lb-${newIPId}`,
+      id: `e-lb-${newIP}`,
       source: "lb",
-      target: newIPId,
+      target: newIP,
       type: "smoothstep",
       animated: true,
       markerEnd: { type: MarkerType.ArrowClosed },
     };
 
     const newEdgeToService: Edge = {
-      id: `e-${newIPId}-service`,
-      source: newIPId,
+      id: `e-${newIP}-service`,
+      source: newIP,
       target: "service",
       type: "smoothstep",
       animated: true,
@@ -227,7 +238,7 @@ function App() {
     setEdges((prevEdges) => [...prevEdges, newEdgeFromLB, newEdgeToService]);
 
     try {
-      await api.post("/add_ip", { ip: newIPId });
+      await api.post("/add_ip", { ip: newIP });
     } catch (error) {
       console.error("Failed to add new IP to backend:", error);
     }
