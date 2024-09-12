@@ -1,11 +1,12 @@
 import os
 
 from flask import Flask, jsonify, send_from_directory, request
+from flask_cors import CORS
 import random
 from collections import deque
 
 app = Flask(__name__, static_folder="./client/build")
-
+CORS(app)
 
 class LoadBalancer:
     def __init__(self, ips):
@@ -44,11 +45,15 @@ class LoadBalancer:
 
 lb = LoadBalancer(
     [
-        "95.77.48.211",
-        "109.170.148.204",
-        "76.223.137.165",
-        "122.117.19.28",
-        "45.223.197.37",
+        # "95.77.48.211",
+        # "109.170.148.204",
+        # "76.223.137.165",
+        # "122.117.19.28",
+        # "45.223.197.37",
+        "ip1",
+        "ip2",
+        "ip3",
+        "ip4"
     ]
 )
 
